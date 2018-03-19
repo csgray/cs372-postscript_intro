@@ -1,0 +1,255 @@
+%! PostScript
+% Corey Gray
+% 18 March 2018
+% CS 372: Homework 4 - Introduction to PostScript
+
+% Shape Functions
+% Each of these takes two parameters which are passed to the moveto operator
+/box {
+    newpath
+    moveto
+    72 0 rlineto
+    0 72 rlineto
+    -72 0 rlineto
+    closepath
+} def
+
+/triangle {
+    newpath
+    moveto
+    72 108 rlineto
+    72 -108 rlineto
+    closepath
+} def
+
+% Page 1
+% Draw a square where one side is left open
+newpath
+288 288 moveto
+0 -72 rlineto           % Down
+72 0 rlineto            % Right
+0 72 rlineto            % Up
+stroke
+showpage
+
+% Page 2
+% Draw a line that rotates and gets longer as the rotation progresses (bonus: thicker too!)
+0 10 360 {
+    newpath
+    dup                 % We need a copy of the loop index for the stroke length
+    dup                 % And another copy for line width
+
+    gsave
+        216 216 moveto
+        90 add          % An additional 90 degrees for portrait orientation
+        rotate          % Uses the loop index
+        0 rlineto       % Leaving out the first operand makes it use the loop index
+        
+        20 div          % Divides the index on the stack by 20 so that lines aren't huge
+        setlinewidth    % Leave out the operand so that it uses the loop index
+        stroke
+    grestore
+
+} for
+showpage
+
+% Page 3
+% Draw a 3x3 array of boxes
+/threeBoxRow {
+    0 72 144 {
+        gsave
+            0 translate % Uses loop index for the x-value
+            0 0 box
+            stroke
+        grestore
+    } for
+} def
+
+144 144 translate
+threeBoxRow
+0 72 translate
+threeBoxRow
+0 72 translate
+threeBoxRow
+showpage
+
+% Page 4
+% Draw two lines of different thicknesses and shades
+% Draw two boxes, one solid grey and another with a black stroke and no fill,
+% and draw the second box several times with different rotations.
+
+72 72 moveto
+72 144 lineto
+0 setgray               % 100% black
+1 setlinewidth          % 1 pt line
+stroke
+
+gsave
+    144 72 moveto
+    144 144 lineto
+    0.5 setgray         % 50% grey     
+    10 setlinewidth     % 10 pt line
+    stroke
+
+    % Draw a grey box
+    216 72 box
+    3 setlinewidth      % 3 pt line, same as second box
+    gsave               % Save the path so that we can also fill it
+        stroke          % Now this box will have the same visual dimensions as the second box
+    grestore
+    fill
+grestore
+
+% Draw a box with a black outline and no fill
+3 setlinewidth
+300 72 box
+stroke
+
+% Draw several more boxes rotated and translated across the page
+72 288 translate
+0 72 360 {
+    dup                 % Duplicate the loop index for translate and rotate
+    gsave
+        0 translate     % First parameter is the loop index
+        rotate          % Parameter is the loop index
+        0 0 box
+        stroke
+    grestore
+} for
+
+% Draw more boxes in a flower-cluster by rotating the box around the same origin
+288 288 translate
+0 36 360 {
+    gsave
+        rotate          % Parameter is the loop index
+        0 0 box
+        stroke
+    grestore
+} for
+
+showpage
+
+% Page 5
+% Draw something moderately complex, including a circle or circular arc
+288 288 translate       % Set the center of the image
+
+% Left ear
+gsave
+    40 rotate
+    1.1 1.1 scale 
+    -36 90 translate
+    -36 0 triangle
+    0.4 0.2 0 setrgbcolor   % Brown rgb(102,51,0)
+    fill
+grestore
+
+% Left inner ear
+gsave
+    40 rotate
+    -36 90 translate
+    -36 0 triangle
+    1 0.75 0.8 setrgbcolor  % Pink: rgb(255,192,203)
+    fill
+grestore
+
+% Right ear
+gsave
+    -40 rotate
+    1.1 1.1 scale 
+    -36 90 translate
+    -36 0 triangle
+    0.4 0.2 0 setrgbcolor   % Brown rgb(102,51,0)
+    fill
+grestore
+
+% Right inner ear
+gsave
+    -40 rotate
+    -36 90 translate
+    -36 0 triangle
+    1 0.75 0.8 setrgbcolor  % Pink: rgb(255,192,203)
+    fill
+grestore
+
+% Head
+gsave
+    newpath
+    0 0 144 0 360 arc
+    0.4 0.2 0 setrgbcolor   % Brown rgb(102,51,0)
+    fill
+grestore 
+
+% Left eye
+gsave
+    -54 54 translate
+    0.8 1.2 scale           % Squish the circle to make an oval
+    0 0 36 0 360 arc
+    1 setgray               % White
+    fill
+grestore
+
+% Left pupil
+gsave
+    -54 36 translate
+    0 0 18 0 360 arc
+    0 setgray               % Black
+    fill
+grestore
+
+% Right eye
+gsave
+    54 54 translate
+    0.8 1.2 scale           % Squish the circle to make an oval
+    0 0 36 0 360 arc
+    1 setgray               % White
+    fill
+grestore
+
+% Right pupil
+gsave
+    54 36 translate
+    0 0 18 0 360 arc
+    0 setgray               % Black
+    fill
+grestore
+
+% Nose
+gsave
+    30 -18 translate
+    180 rotate
+    0.4 0.4 scale
+    0 0 triangle
+    1 0.75 0.8 setrgbcolor  % Pink: rgb(255,192,203)
+    fill
+grestore
+
+% Left whiskers
+150 20 210 {
+    newpath
+    gsave
+        -36 -36 translate
+        rotate              % Parameter is loop index
+        0 0 moveto          % Have to set a current position before relative move works
+        18 0 rmoveto
+        144 0 rlineto       
+        3 setlinewidth 
+        0 setgray           % Black
+        stroke
+    grestore
+} for
+
+30 -20 -30 {
+    newpath
+    gsave
+        36 -36 translate
+        rotate              % Parameter is loop index
+        0 0 moveto          % Have to set a current position before relative move works
+        18 0 rmoveto
+        144 0 rlineto       
+        3 setlinewidth 
+        0 setgray           % Black
+        stroke
+    grestore
+} for
+
+showpage
